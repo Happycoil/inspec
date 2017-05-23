@@ -169,7 +169,8 @@ $groups = $adsi.Children | where {$_.SchemaClassName -eq  'group'} |  ForEach {
   $name = $_.Name[0]
   $sid = ConvertTo-SID -BinarySID $_.ObjectSID[0]
   $group =[ADSI]$_.Path
-  new-object psobject -property @{name = $group.Name[0]; gid = $sid; domain=$Computername}
+  $members = $_.Members() | Foreach-Object { $_.GetType().InvokeMember('Name', 'GetProperty', $null, $_, $null) }
+  new-object psobject -property @{name = $group.Name[0]; gid = $sid; domain = $Computername; members = $members}
 }
 $groups | ConvertTo-Json -Depth 3
       EOH
