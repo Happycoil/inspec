@@ -159,13 +159,13 @@ module Inspec::Resources
     # returns all local groups
     def groups
       script = <<-EOH
-Function  ConvertTo-SID { Param([byte[]]$BinarySID)
-  (New-Object  System.Security.Principal.SecurityIdentifier($BinarySID,0)).Value
+Function ConvertTo-SID { Param([byte[]]$BinarySID)
+  (New-Object System.Security.Principal.SecurityIdentifier($BinarySID,0)).Value
 }
 
-$Computername =  $Env:Computername
-$adsi  = [ADSI]"WinNT://$Computername"
-$groups = $adsi.Children | where {$_.SchemaClassName -eq  'group'} |  ForEach {
+$Computername = $Env:Computername
+$adsi = [ADSI]"WinNT://$Computername"
+$groups = $adsi.Children | where {$_.SchemaClassName -eq 'group'} | ForEach {
   $name = $_.Name[0]
   $sid = ConvertTo-SID -BinarySID $_.ObjectSID[0]
   $group =[ADSI]$_.Path
