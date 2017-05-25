@@ -50,6 +50,7 @@ module Inspec::Resources
           .add(:names,     field: 'name')
           .add(:gids,      field: 'gid')
           .add(:domains,   field: 'domain')
+          .add(:members,   field: 'members')
           .add(:exists?) { |x| !x.entries.empty? }
     filter.connect(self, :collect_group_details)
 
@@ -117,6 +118,10 @@ module Inspec::Resources
     # implements rspec has matcher, to be compatible with serverspec
     def has_gid?(compare_gid)
       gid == compare_gid
+    end
+
+    def members
+      group_info.members if inspec.os.windows?
     end
 
     def local
