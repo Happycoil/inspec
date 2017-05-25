@@ -170,6 +170,10 @@ $groups = $adsi.Children | where {$_.SchemaClassName -eq 'group'} | ForEach {
   $sid = ConvertTo-SID -BinarySID $_.ObjectSID[0]
   $group =[ADSI]$_.Path
   $members = $_.Members() | Foreach-Object { $_.GetType().InvokeMember('Name', 'GetProperty', $null, $_, $null) }
+  # An empty collection of these objects isn't properly converted to an empty array by ConvertTo-Json
+  if(-not [bool]$members) {
+    $members = @()
+  }
   new-object psobject -property @{name = $group.Name[0]; gid = $sid; domain = $Computername; members = $members}
 }
 $groups | ConvertTo-Json -Depth 3
